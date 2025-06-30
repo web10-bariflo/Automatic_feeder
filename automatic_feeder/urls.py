@@ -21,5 +21,7 @@ from app.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auto_feeder_post/', auto_feeder_data_post),
+    path('auto_feeder_get/', get_auto_feeder_data),
     path('manual_feeder_post/', manual_feeder_data_post),
+    path('manual_feeder_get/', get_manual_feeder_data),
 ]

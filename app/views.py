@@ -53,6 +53,22 @@ def auto_feeder_data_post(request):
     return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
 
+@csrf_exempt
+def get_auto_feeder_data(request):
+    if request.method == 'GET':
+        data = AutoFeederData.objects.all().values(
+            'id', 
+            'auto_start_time', 
+            'auto_end_time', 
+            'auto_feed_rate', 
+            'auto_sprinkle_rate'
+        )
+        return JsonResponse(list(data), safe=False, status=200)
+    
+    return JsonResponse({'error': 'Only GET method is allowed'}, status=405)
+
+
+
 
 @csrf_exempt
 def manual_feeder_data_post(request):
@@ -99,3 +115,19 @@ def manual_feeder_data_post(request):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
     return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+
+
+
+@csrf_exempt
+def get_manual_feeder_data(request):
+    if request.method == 'GET':
+        data = ManualFeederData.objects.all().values(
+            'id',
+            'manual_start_time',
+            'manual_end_time',
+            'manual_feed_rate',
+            'manual_sprinkle_rate'
+        )
+        return JsonResponse(list(data), safe=False, status=200)
+
+    return JsonResponse({'error': 'Only GET method is allowed'}, status=405)
