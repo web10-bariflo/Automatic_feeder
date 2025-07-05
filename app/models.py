@@ -8,6 +8,7 @@ class AutoFeederData(models.Model):
     auto_end_time = models.CharField(max_length=255)  
     auto_feed_rate = models.CharField(max_length=255) 
     auto_sprinkle_rate = models.CharField(max_length=255)  
+    Timestamp = models.DateTimeField(auto_now_add=True)
 
 
 
@@ -17,3 +18,4 @@ class ManualFeederData(models.Model):
     manual_end_time = models.CharField(max_length=255)  
     manual_feed_rate = models.CharField(max_length=255) 
     manual_sprinkle_rate = models.CharField(max_length=255)  
+    Timestamp = models.DateTimeField(auto_now_add=True)

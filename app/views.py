@@ -5,14 +5,12 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import *
 
 
-
 @csrf_exempt
 def auto_feeder_data_post(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
 
-            # Ensure data is always a list
             if not isinstance(data, list):
                 data = [data]
 
@@ -40,6 +38,7 @@ def auto_feeder_data_post(request):
                     'auto_end_time': feeder.auto_end_time,
                     'auto_feed_rate': feeder.auto_feed_rate,
                     'auto_sprinkle_rate': feeder.auto_sprinkle_rate,
+                    'timestamp': feeder.Timestamp.strftime('%Y-%m-%d %H:%M:%S'),  # or .isoformat()
                 })
 
             return JsonResponse({
@@ -56,7 +55,7 @@ def auto_feeder_data_post(request):
 @csrf_exempt
 def get_auto_feeder_data(request):
     if request.method == 'GET':
-        data = AutoFeederData.objects.all().values(
+        data = AutoFeederData.objects.all().order_by('-auto_start_time')[:50].values(
             'id', 
             'auto_start_time', 
             'auto_end_time', 
@@ -66,6 +65,7 @@ def get_auto_feeder_data(request):
         return JsonResponse(list(data), safe=False, status=200)
     
     return JsonResponse({'error': 'Only GET method is allowed'}, status=405)
+
 
 
 
@@ -104,6 +104,7 @@ def manual_feeder_data_post(request):
                     'manual_end_time': feeder.manual_end_time,
                     'manual_feed_rate': feeder.manual_feed_rate,
                     'manual_sprinkle_rate': feeder.manual_sprinkle_rate,
+                    'timestamp': feeder.Timestamp.strftime('%Y-%m-%d %H:%M:%S'),  # Or use .isoformat()
                 })
 
             return JsonResponse({
@@ -121,7 +122,7 @@ def manual_feeder_data_post(request):
 @csrf_exempt
 def get_manual_feeder_data(request):
     if request.method == 'GET':
-        data = ManualFeederData.objects.all().values(
+        data = ManualFeederData.objects.all().order_by('-manual_start_time')[:50].values(
             'id',
             'manual_start_time',
             'manual_end_time',
