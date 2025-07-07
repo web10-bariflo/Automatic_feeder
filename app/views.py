@@ -55,7 +55,7 @@ def auto_feeder_data_post(request):
 @csrf_exempt
 def get_auto_feeder_data(request):
     if request.method == 'GET':
-        data = AutoFeederData.objects.all().order_by('-auto_start_time')[:50].values(
+        data = AutoFeederData.objects.all().order_by('-Timestamp')[:50].values(
             'id', 
             'auto_start_time', 
             'auto_end_time', 
@@ -122,7 +122,7 @@ def manual_feeder_data_post(request):
 @csrf_exempt
 def get_manual_feeder_data(request):
     if request.method == 'GET':
-        data = ManualFeederData.objects.all().order_by('-manual_start_time')[:50].values(
+        data = ManualFeederData.objects.all().order_by('-Timestamp')[:50].values(
             'id',
             'manual_start_time',
             'manual_end_time',
