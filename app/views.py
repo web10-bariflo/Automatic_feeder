@@ -136,12 +136,9 @@ def get_manual_feeder_data(request):
 
 
 
-def latest_alerts_auto(request):
-    latest_alerts = Alert_message_auto.objects.order_by('-Timestamp')[:5]
+def latest_alerts(request):
+    latest_alerts = Alert_message.objects.order_by('-Timestamp')[:5]
     data = [{'alert': a.alert, 'timestamp': a.Timestamp} for a in latest_alerts]
     return JsonResponse(data, safe=False)
 
-def latest_alerts_manual(request):
-    latest_alerts = Alert_message_manual.objects.order_by('-Timestamp')[:5]
-    data = [{'alert': a.alert, 'timestamp': a.Timestamp} for a in latest_alerts]
-    return JsonResponse(data, safe=False)
+

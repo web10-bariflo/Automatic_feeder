@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 from django.core.management.base import BaseCommand
-from app.models import Alert_message_auto, Alert_message_manual
+from app.models import Alert_message
 
 BROKER = "mqttbroker.bc-pl.com"
 PORT = 1883
@@ -8,51 +8,33 @@ USERNAME = "mqttuser"
 PASSWORD = "Bfl@2025"
 
 DEVICE_ID = "BFL_FdtryA001"
-AUTO_STATUS_TOPIC = f"auto_feeder/{DEVICE_ID}/auto/status"
-MANUAL_STATUS_TOPIC = f"auto_feeder/{DEVICE_ID}/manual/status"
-
-TOPICS = [
-    (AUTO_STATUS_TOPIC, 0),
-    (MANUAL_STATUS_TOPIC, 0),
-]
+SYSTEM_ALERT_TOPIC = f"auto_feeder/{DEVICE_ID}/system/alert"
 
 class Command(BaseCommand):
-    help = 'Subscribe to auto/manual status topics and save messages'
+    help = 'Subscribe to system alert topic and save messages to Alert_message table'
 
     def handle(self, *args, **options):
         def on_connect(client, userdata, flags, rc):
             if rc == 0:
                 self.stdout.write(self.style.SUCCESS("✅ Connected to MQTT broker"))
-                for topic, qos in TOPICS:
-                    client.subscribe((topic, qos))
-                    self.stdout.write(self.style.SUCCESS(f"🔔 Subscribed to topic: {topic}"))
+                client.subscribe(SYSTEM_ALERT_TOPIC)
+                self.stdout.write(self.style.SUCCESS(f"🔔 Subscribed to topic: {SYSTEM_ALERT_TOPIC}"))
             else:
                 self.stdout.write(self.style.ERROR(f"❌ Connection failed with code {rc}"))
 
         def on_message(client, userdata, msg):
             try:
-                topic = msg.topic
                 payload = msg.payload.decode()
-                self.stdout.write(f"📩 Message from {topic}: {payload}")
-
-                if topic == AUTO_STATUS_TOPIC:
-                    Alert_message_auto.objects.create(alert=payload)
-                    self.stdout.write(self.style.SUCCESS("✅ Auto status message saved"))
-
-                elif topic == MANUAL_STATUS_TOPIC:
-                    Alert_message_manual.objects.create(alert=payload)
-                    self.stdout.write(self.style.SUCCESS("✅ Manual status message saved"))
-
-                else:
-                    self.stdout.write(self.style.WARNING(f"⚠️ Unknown topic: {topic}"))
-
+                self.stdout.write(f"📩 Message: {payload}")
+                Alert_message.objects.create(alert=payload)
+                self.stdout.write(self.style.SUCCESS("✅ Message saved to Alert_message table"))
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f"❌ Error processing message: {e}"))
+                self.stdout.write(self.style.ERROR(f"❌ Error saving message: {e}"))
 
         def on_disconnect(client, userdata, rc):
-            self.stdout.write(f"⚠️ Disconnected (code {rc})")
+            self.stdout.write(f"⚠️ Disconnected with code {rc}")
             if rc != 0:
-                self.stdout.write("🔄 Reconnecting...")
+                self.stdout.write("🔄 Attempting to reconnect...")
                 try:
                     client.reconnect()
                 except Exception as e:

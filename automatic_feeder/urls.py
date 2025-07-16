@@ -24,6 +24,6 @@ urlpatterns = [
     path('auto_feeder_get/', get_auto_feeder_data),
     path('manual_feeder_post/', manual_feeder_data_post),
     path('manual_feeder_get/', get_manual_feeder_data),
-    path('get_alert_auto/', latest_alerts_auto),
-    path('get_alert_manual/', latest_alerts_manual),
+    path('get_alert/', latest_alerts),
+    
 ]

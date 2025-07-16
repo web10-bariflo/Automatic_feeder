@@ -15,11 +15,7 @@ class ManualFeederData(admin.ModelAdmin):
     search_fields = ('manual_start_time', 'manual_end_time')
 
 
-@admin.register(Alert_message_auto)
-class Alert_message_auto(admin.ModelAdmin):
+@admin.register(Alert_message)
+class Alert_message(admin.ModelAdmin):
     list_display = ('alert','Timestamp')
 
-
-@admin.register(Alert_message_manual)
-class Alert_message_manual(admin.ModelAdmin):
-    list_display = ('alert','Timestamp')
