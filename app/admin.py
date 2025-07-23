@@ -2,6 +2,11 @@
 from django.contrib import admin
 from .models import *
 
+@admin.register(MyUser)
+class MyUser(admin.ModelAdmin):
+    list_display = ('Device_id','User_name','Mob','Email','password')
+    
+
 @admin.register(AutoFeederData)
 class AutoFeederData(admin.ModelAdmin):
     list_display = ('id','auto_start_time', 'auto_end_time', 'auto_feed_rate', 'auto_sprinkle_rate','Timestamp')

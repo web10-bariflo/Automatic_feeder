@@ -20,6 +20,11 @@ from app.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('create_user/', create_user),
+    path('login/', login_user),
+    path('forgot_password/', forgot_password),
+    path('reset_password/', reset_password),
+    path('reset-password/', reset_password_page),
     path('auto_feeder_post/', auto_feeder_data_post),
     path('auto_feeder_get/', get_auto_feeder_data),
     path('manual_feeder_post/', manual_feeder_data_post),
