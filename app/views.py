@@ -6,7 +6,18 @@ from .models import *
 from django.conf import settings
 from django.shortcuts import render
 import traceback
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
+from .models import FeederSetting
+from .serializers import FeederSettingSerializer
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
+
+MAX_POINT = 3750  # 100% = 3750 points
 
 @csrf_exempt
 def create_user(request):
@@ -307,10 +318,84 @@ def get_manual_feeder_data(request):
 
 
 
-
 def latest_alerts(request):
     latest_alerts = Alert_message.objects.order_by('-Timestamp')[:5]
     data = [{'alert': a.alert, 'timestamp': a.Timestamp} for a in latest_alerts]
     return JsonResponse(data, safe=False)
 
 
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def feeder_settings(request):
+    if request.method == 'GET':
+        settings = FeederSetting.objects.all().order_by('-created_at')
+        serializer = FeederSettingSerializer(settings, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            percentage = data.get('percentage')
+
+            try:
+                percentage = float(percentage)
+                if percentage < 0 or percentage > 100:
+                    return JsonResponse(
+                        {"error": "Percentage must be between 0 and 100"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            except (ValueError, TypeError):
+                return JsonResponse(
+                    {"error": "Percentage must be a valid number"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            point_value = (percentage / 100) * MAX_POINT
+
+            setting = FeederSetting(percentage=percentage, point_value=point_value)
+            setting.save()
+
+            serializer = FeederSettingSerializer(setting)
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"error": "Invalid JSON"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+
+@require_http_methods(["GET"])
+def predefined_percentages(request):
+    predefined_data = []
+    
+    # Generate percentages from 10 to 100 with step of 10
+    for percentage in range(10, 101, 10):
+        point_value = int((percentage / 100) * 3750)
+        
+        predefined_data.append({
+            "id": percentage // 10,  # Generate IDs 1, 2, 3, ..., 10
+            "percentage": percentage,
+            "point_value": point_value,
+            "description": f"{percentage}% = {point_value} points"
+        })
+    
+    return JsonResponse(predefined_data, safe=False)
+
+
+
+# @api_view(['GET', 'POST'])
+# def feeder_settings(request):
+#     if request.method == 'GET':
+#         settings = FeederSetting.objects.all().order_by('-created_at')
+#         serializer = FeederSettingSerializer(settings, many=True)
+#         return Response(serializer.data)
+    
+#     elif request.method == 'POST':
+#         serializer = FeederSettingSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

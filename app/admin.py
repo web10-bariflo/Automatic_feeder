@@ -2,6 +2,8 @@
 from django.contrib import admin
 from .models import *
 
+
+
 @admin.register(MyUser)
 class MyUser(admin.ModelAdmin):
     list_display = ('Device_id','User_name','Mob','Email','password')
@@ -23,4 +25,13 @@ class ManualFeederData(admin.ModelAdmin):
 @admin.register(Alert_message)
 class Alert_message(admin.ModelAdmin):
     list_display = ('alert','Timestamp')
+
+
+@admin.register(FeederSetting)
+class FeederSettingAdmin(admin.ModelAdmin):
+    list_display = ('point_value', 'percentage', 'created_at')
+    ordering = ('-created_at',)
+    search_fields = ('point_value', 'percentage')
+    list_filter = ('created_at',)
+    readonly_fields = ('percentage', 'created_at')
 

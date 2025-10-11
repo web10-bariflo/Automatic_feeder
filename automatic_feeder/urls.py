@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app.views import *
+from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +31,11 @@ urlpatterns = [
     path('manual_feeder_post/', manual_feeder_data_post),
     path('manual_feeder_get/', get_manual_feeder_data),
     path('get_alert/', latest_alerts),
+    
+
+    ########### Feeder Setting APIs ###########
+    path('feeder/', views.feeder_settings),
+    path('feeder_predefiend/', views.predefined_percentages),
+
     
 ]
