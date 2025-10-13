@@ -372,7 +372,7 @@ def predefined_percentages(request):
     predefined_data = []
     
     # Generate percentages from 10 to 100 with step of 10
-    for percentage in range(10, 101, 10):
+    for percentage in range(0, 101, 10):
         point_value = int((percentage / 100) * 3750)
         
         predefined_data.append({
