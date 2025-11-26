@@ -2,7 +2,9 @@ import paho.mqtt.client as mqtt
 from django.core.management.base import BaseCommand
 from app.models import Alert_message
 
-BROKER = "mqttbroker.bc-pl.com"
+# MQTT Broker Configuration
+BROKER = "mqttbroker.bc-pl.com"  # Remote broker
+# BROKER = "localhost"  # Uncomment for local testing
 PORT = 1883
 USERNAME = "mqttuser"
 PASSWORD = "Bfl@2025"
@@ -40,14 +42,20 @@ class Command(BaseCommand):
                 except Exception as e:
                     self.stdout.write(self.style.ERROR(f"❌ Reconnection failed: {e}"))
 
-        client = mqtt.Client()
-        client.username_pw_set(USERNAME, PASSWORD)
+        client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
+        
+        # Only set credentials if provided
+        if USERNAME and PASSWORD:
+            client.username_pw_set(USERNAME, PASSWORD)
+            
         client.on_connect = on_connect
         client.on_message = on_message
         client.on_disconnect = on_disconnect
 
         try:
+            self.stdout.write(f"🔌 Connecting to {BROKER}:{PORT}...")
             client.connect(BROKER, PORT, 60)
             client.loop_forever()
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"❌ MQTT connection error: {e}"))
+        

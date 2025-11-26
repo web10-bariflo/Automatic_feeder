@@ -111,10 +111,10 @@ DATABASES = {
         'NAME': 'automatic_feeder',
         'USER': 'vertoxl',
         'PASSWORD': 'vertoxlabs',
-        'HOST': '192.168.1.140',
+        'HOST': '192.168.1.140', 
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'require',  # Disable SSL
+            'sslmode': 'disable',  # Disable SSL
         },
     }
 }
@@ -165,7 +165,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
     "https://autofeeder.bc-pl.com",
-    "http://localhost:5173"
+    "http://localhost:5173",
 ]
 
 

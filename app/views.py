@@ -178,7 +178,7 @@ def reset_password(request):
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 
-
+    
 
 @csrf_exempt
 def reset_password_page(request):
